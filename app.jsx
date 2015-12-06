@@ -1,37 +1,13 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
 var CalcHelper = require('./CalcHelper');
-
-var data = [
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 1, 1, 0, 0, 0, 0],
-  [0, 0, 0, 1, 0, 0, 1, 0, 0, 0],
-  [0, 0, 1, 0, 0, 0, 0, 1, 0, 0],
-  [0, 1, 0, 0, 0, 0, 0, 0, 1, 0],
-  [0, 1, 0, 0, 0, 0, 0, 0, 1, 0],
-  [0, 0, 1, 0, 0, 0, 0, 1, 0, 0],
-  [0, 0, 0, 1, 0, 0, 1, 0, 0, 0],
-  [0, 0, 0, 0, 1, 1, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-];
-
-var data2 = [
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-  [0, 1, 1, 1, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-];
+var ConstData = require('./ConstData');
 
 var LifeGame = React.createClass({
   getInitialState: function() {
     return {
-      data: this.props.data
+      data: ConstData.random(40),
+      interval: 100
     }
   },
   refleshData: function() {
@@ -46,26 +22,38 @@ var LifeGame = React.createClass({
     });
   },
   componentDidMount: function() {
-    setInterval(this.refleshData, 1000);
+    setInterval(this.refleshData, this.state.interval);
   },
   render: function() {
+    var data = this.state.data;
     return (
       <div className="lifegame">
-        <Cells data={this.state.data} />
-        <SettingsArea onBtn={this.handleBtn} />
+        <Cells data={data} />
+        <SettingsArea
+          onBtn={this.handleBtn}
+          areaSize={data.length}
+        />
       </div>
     )
   }
 });
 
 var SettingsArea = React.createClass({
-  handleOKBtn: function(e) {
-    this.props.onBtn(data2);
+  handleGliderBtn: function() {
+    this.props.onBtn(ConstData.glider(this.props.areaSize));
+  },
+  handleRandomBtn: function() {
+    this.props.onBtn(ConstData.random(this.props.areaSize));
+  },
+  handleGliderGunBtn: function() {
+    this.props.onBtn(ConstData.gliderGun(this.props.areaSize));
   },
   render: function() {
     return (
       <div className="settings-area">
-        <button onClick={this.handleOKBtn}>OK</button>
+        <button onClick={this.handleGliderBtn}>グライダー</button>
+        <button onClick={this.handleRandomBtn}>ランダム</button>
+        <button onClick={this.handleGliderGunBtn}>グライダーガン</button>
       </div>
     );
   }
@@ -122,6 +110,6 @@ var Cell = React.createClass({
 });
 
 ReactDOM.render(
-  <LifeGame data={data} />,
+  <LifeGame />,
   document.getElementById('content')
 );
